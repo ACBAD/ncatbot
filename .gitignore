@@ -180,3 +180,5 @@ dev/
 *.sqlite3
 *.sqlite3-journal
 *.DS_Store
+test_config.yaml
+test_main.py

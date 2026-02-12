@@ -133,20 +133,23 @@ class NapCatConfig(BaseConfig):
         """
         issues = []
         can_auto_fix = auto_fix
+        need_fix = False
 
         # WS Token 检查
         if self.ws_listen_ip == "0.0.0.0" and not strong_password_check(self.ws_token):
             if self.ws_token != DEFAULT_WS_TOKEN:
                 can_auto_fix = False
                 issues.append("WS 令牌强度不足")
+            need_fix = True
 
         # WebUI Token 检查
         if self.enable_webui and not strong_password_check(self.webui_token):
             if self.webui_token != DEFAULT_WEBUI_TOKEN:
                 can_auto_fix = False
                 issues.append("WebUI 令牌强度不足")
+            need_fix = True
 
-        if can_auto_fix:
+        if can_auto_fix and need_fix:
             self.fix_security_issues()
             return []
 
@@ -178,7 +181,9 @@ class Config(BaseConfig):
 
     def is_local(self) -> bool:
         """NapCat 是否为本地服务。"""
-        return self.napcat.ws_host in ("localhost", "127.0.0.1")
+        if self.napcat.remote_mode is None:
+            return self.napcat.ws_host in ("localhost", "127.0.0.1")
+        return self.napcat.remote_mode
 
     def is_default_uin(self) -> bool:
         """是否使用默认 QQ 号。"""
